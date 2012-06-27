@@ -65,6 +65,9 @@
             contentElement: null, // jQueryObject function(jQueryObject head) : returns the element that contains the item's HTML content.
             contentContainer: null, // jQueryObject function(jQueryObject head) : returns the element that is the item's container element of the content and is the element that is hidden and shown.
             iconContainer: null // jQueryObject function(jQueryObject head) : returns the element that is the item's container element of the arrow icon.
+
+            // powercat97
+            , useClickableItems: false
         },
 
         _isTable: false,
@@ -203,6 +206,35 @@
 
                 if (v_use_icon)
                     $this._addIcon(head, v_is_expanded);
+
+                // powercat97
+                if (options.useClickableItems) {
+
+                    // Add the ui classes for expanded/collapsed items
+                    if (v_is_expanded)
+                        head.addClass("ui-state-active");
+                    else
+                        head.addClass("ui-state-default");
+
+                    // Bind the mouse events if we need to have hover states.
+                    head
+                    .bind("mouseenter.expandable", function () {
+                        if (options.disabled) { return; }
+                        $(this).addClass("ui-state-hover");
+                    })
+                    .bind("mouseleave.expandable", function () {
+                        if (options.disabled) { return; }
+                        $(this).removeClass("ui-state-hover");
+                    })
+                    .bind("focus.expandable", function () {
+                        if (options.disabled) { return; }
+                        $(this).addClass("ui-state-focus");
+                    })
+                    .bind("blur.expandable", function () {
+                        if (options.disabled) { return; }
+                        $(this).removeClass("ui-state-focus");
+                    });
+                }
             });
         },
 
@@ -426,6 +458,11 @@
                 .addClass(options.icon.expanded)
                 .attr("title", options.icon.expandedTitle || $.jqAmpUI.expandable.globalization.defaultIconExpandedTitle);
 
+            // powercat97
+            if (options.useClickableItems) {
+                head.addClass('ui-state-active').removeClass('ui-state-default');
+            }
+
             if (!this._isTable && !options.noWidgetClasses)
                 head.removeClass("ui-corner-all").addClass("ui-corner-top");
 
@@ -472,6 +509,11 @@
                 .removeClass(options.icon.expanded)
                 .addClass(options.icon.collapsed)
                 .attr("title", options.icon.collapsedTitle || $.jqAmpUI.expandable.globalization.defaultIconCollapsedTitle);
+
+            // powercat97
+            if (options.useClickableItems) {
+                head.addClass('ui-state-default').removeClass('ui-state-active'); // .removeClass('ui-state-active')
+            }
 
             if (!this._isTable && !options.noWidgetClasses)
                 head.removeClass("ui-corner-top").addClass("ui-corner-all");
